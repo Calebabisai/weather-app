@@ -1,0 +1,6 @@
+<input 
+  [value]="city()"
+  (input)="city.set($any($event.target).value)"
+  (keyup.enter)="onSearch()"
+/>
+<button (click)="onSearch()">Buscar</button>
