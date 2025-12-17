@@ -1,7 +1,7 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { WeatherService } from '../../services/weather.service';
-import { WeatherData } from '../../models/weather.model';
-import { toSignal } from '@angular/core/rxjs-interop';
+import { toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { catchError, of, switchMap, tap } from 'rxjs';
 
 @Component({
   selector: 'app-weather-display',
@@ -16,15 +16,35 @@ export class WeatherDisplay {
   //Signals
   isLoading = signal(false);
   error = signal<string | null>(null);
-  weatherData = signal<WeatherData | null>(null);
   city = signal('');
 
+  weatherData = toSignal(
+    toObservable(this.city).pipe(
 
-  onCitySearch(citys: string) {
-    this.isLoading.set(true);
-    this.error.set(null);
+      tap(() => {
+        this.isLoading.set(true);
+        this.error.set(null);
+      }),
 
-    this.city.set(citys);
-  }
+      switchMap(city => {
+        if (!city) {
+          this.isLoading.set(false);
+          return of(null);
+        }
+
+        return this.weatherService.getWeather(city);
+      }),
+
+      tap(() => this.isLoading.set(false)),
+
+      catchError(err => {
+        this.error.set('Error al obtener el clima');
+        this.isLoading.set(false);
+        return of(null);
+      })
+
+    ),
+    { initialValue: null }
+  );
   
-} 
+}

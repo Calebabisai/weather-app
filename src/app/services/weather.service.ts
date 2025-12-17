@@ -23,11 +23,7 @@ export class WeatherService {
     const url = `${this.apiUrl}?q=${city}&appid=${this.apiKey}&units=metric&lang=es`;
 
     return this.http.get<WeatherModel>(url).pipe(
-      map(response => this.transformWeatherData(response)),
-      catchError(error => {
-        console.error('Error fetching weather data:', error);
-        return of(null);
-      })
+      map(response => this.transformWeatherData(response))
     )
   }
   //Transformar datos del API a WeatherData

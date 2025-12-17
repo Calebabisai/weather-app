@@ -1,1 +1,49 @@
-<p>weather-display works!</p>
+<!-- Cargando -->
+@if (isLoading()) {
+    <div>
+        <p>Cargando...</p>
+    </div>
+}
+
+<!-- Error -->
+@if (!isLoading() && error()) {
+    <div>
+        <p class="error">{{ error() }}</p>
+    </div>
+}
+
+<!-- Datos del clima -->
+@if (!isLoading() && (weatherData() as w)) {
+    <div>
+        <div class="weather-card">
+            <h2>{{ w.city }}, {{ w.country }}</h2>
+
+            <div class="main">
+                @if (w.icon) {
+                    <img
+                        [src]="'https://openweathermap.org/img/wn/' + w.icon + '@2x.png'"
+                        [alt]="w.description"
+                    />
+                }
+                <div class="temps">
+                    <p class="temp">{{ w.temp }}°C</p>
+                    <p class="feels">Sensación: {{ w.feelsLike }}°C</p>
+                </div>
+            </div>
+
+            <p class="desc">{{ w.description | titlecase }}</p>
+
+            <ul class="details">
+                <li>Humedad: {{ w.humidity }}%</li>
+                <li>Viento: {{ w.windSpeed }} m/s</li>
+                <li>Última consulta: {{ w.timestamp | date:'short' }}</li>
+            </ul>
+        </div>
+    </div>
+} @else {
+    @if (!isLoading() && !error()) {
+        <div>
+            <p>Busca una ciudad para ver el clima.</p>
+        </div>
+    }
+}
