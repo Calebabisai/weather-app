@@ -1,13 +1,13 @@
-import { Component, inject, input, signal } from '@angular/core';
+import { Component, effect, inject, input, signal } from '@angular/core';
 import { WeatherService } from '../../services/weather.service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
 import { catchError, of, switchMap, tap } from 'rxjs';
-import { TitleCasePipe, DatePipe } from '@angular/common';
+import { TitleCasePipe, DatePipe, CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-weather-display',
   standalone: true,
-  imports: [TitleCasePipe, DatePipe],
+  imports: [CommonModule, TitleCasePipe, DatePipe],
   templateUrl: './weather-display.html',
   styleUrl: './weather-display.scss',
 })
@@ -20,6 +20,12 @@ export class WeatherDisplay {
   isLoading = signal(false);
   error = signal<string | null>(null);
   city = signal('');
+
+  constructor() {
+    effect(() => {
+      this.city.set(this.cityInput() ?? '');
+    })
+  }
 
   weatherData = toSignal(
     toObservable(this.city).pipe(
