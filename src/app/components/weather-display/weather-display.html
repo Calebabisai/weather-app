@@ -13,30 +13,30 @@
 }
 
 <!-- Datos del clima -->
-@if (!isLoading() && (weatherData() as w)) {
+@if (!isLoading() && weatherData(); as weath) {
     <div>
         <div class="weather-card">
-            <h2>{{ w.city }}, {{ w.country }}</h2>
+            <h2>{{ weath.city }}, {{ weath.country }}</h2>
 
             <div class="main">
-                @if (w.icon) {
+                @if (weath.icon) {
                     <img
-                        [src]="'https://openweathermap.org/img/wn/' + w.icon + '@2x.png'"
-                        [alt]="w.description"
+                        [src]="'https://openweathermap.org/img/wn/' + weath.icon + '@2x.png'"
+                        [alt]="weath.description"
                     />
                 }
                 <div class="temps">
-                    <p class="temp">{{ w.temp }}°C</p>
-                    <p class="feels">Sensación: {{ w.feelsLike }}°C</p>
+                    <p class="temp">{{ weath.temp }}°C</p>
+                    <p class="feels">Sensación: {{ weath.feelsLike }}°C</p>
                 </div>
             </div>
 
-            <p class="desc">{{ w.description | titlecase }}</p>
+            <p class="desc">{{ weath.description | titlecase }}</p>
 
             <ul class="details">
-                <li>Humedad: {{ w.humidity }}%</li>
-                <li>Viento: {{ w.windSpeed }} m/s</li>
-                <li>Última consulta: {{ w.timestamp | date:'short' }}</li>
+                <li>Humedad: {{ weath.humidity }}%</li>
+                <li>Viento: {{ weath.windSpeed }} m/s</li>
+                <li>Última consulta: {{ weath.timestamp | date:'short' }}</li>
             </ul>
         </div>
     </div>
