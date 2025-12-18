@@ -1,1 +1,24 @@
-<p>history works!</p>
+<div>
+    @if (history().length > 0) {
+        <div class="history-section">
+            <h3>Historial de busqueda</h3>
+            <ul class="history-list">
+                @for (item of history(); track item.city + item.timestamp) {
+                    <li class="history-item">
+                        <div class="item-header">
+                            <strong>{{ item.city }}, {{ item.country }}, {{ item.timestamp }}</strong>
+                        </div>
+                        <div class="item-details">
+                            <span class="temp">{{ item.temp }}°C</span>
+                            <span class="desc">{{ item.description | titlecase }}</span>
+                            <span class="date">{{ item.timestamp | date:'short' }}</span>
+                        </div>                        
+                    </li>
+                }
+            </ul>
+            <button class="btn-clear" (click)="clearHistory()">Limpiar historial</button>
+        </div>
+    } @else {
+        <p class="no-history">No hay historial disponible</p>
+    }
+</div>

@@ -44,6 +44,11 @@ export class WeatherDisplay {
         }
 
         return this.weatherService.getWeather(city).pipe(
+          tap(data => {
+            if (data) {
+              this.weatherService.saveToHistory(data); //Guardamos en el historial
+            }
+          }),
           catchError(error => {
             this.error.set('El nombre de la ciudad no existe, por favor intenta de nuevo');
             return of(null);
@@ -56,5 +61,4 @@ export class WeatherDisplay {
     ),
     { initialValue: null }
   );
-  
 }
