@@ -1,7 +1,7 @@
 import { Component, effect, inject, input, signal } from '@angular/core';
 import { WeatherService } from '../../services/weather.service';
 import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { catchError, of, switchMap, tap } from 'rxjs';
+import { catchError, finalize, of, switchMap, tap } from 'rxjs';
 import { TitleCasePipe, DatePipe, CommonModule } from '@angular/common';
 
 @Component({
@@ -24,6 +24,8 @@ export class WeatherDisplay {
   constructor() {
     effect(() => {
       this.city.set(this.cityInput() ?? '');
+
+      this.error.set(null);
     })
   }
 
@@ -41,17 +43,16 @@ export class WeatherDisplay {
           return of(null);
         }
 
-        return this.weatherService.getWeather(city);
+        return this.weatherService.getWeather(city).pipe(
+          catchError(error => {
+            this.error.set('El nombre de la ciudad no existe, por favor intenta de nuevo');
+            return of(null);
+          }),
+          finalize(() => {
+            this.isLoading.set(false);
+          })
+        )
       }),
-
-      tap(() => this.isLoading.set(false)),
-
-      catchError(err => {
-        this.error.set('Error al obtener el clima');
-        this.isLoading.set(false);
-        return of(null);
-      })
-
     ),
     { initialValue: null }
   );
