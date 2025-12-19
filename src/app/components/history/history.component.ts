@@ -18,18 +18,14 @@ export class History {
   //Signal para el historial
   history = signal<WeatherData[]>(this.weatherService.getHistory());
 
-  constructor() {
+  historyEffect = effect(() => {
 
-    effect(() => {
-      effect(() => {
-        
-        const interval = setInterval(() => {
-          this.history.set(this.weatherService.getHistory());
-        }, 1000);
+    const interval = setInterval(() => {
+      this.history.set(this.weatherService.getHistory());
+    }, 1000);
 
-      })
-    });
-  }
+    return () => clearInterval(interval);
+  })
 
   clearHistory() {
    this.weatherService.clearHistory();

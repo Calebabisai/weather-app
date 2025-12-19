@@ -13,6 +13,7 @@ import { TitleCasePipe, DatePipe, CommonModule } from '@angular/common';
 })
 export class WeatherDisplay {
   private weatherService = inject(WeatherService);
+  private readonly lastCityKey = 'last-city-search';
 
   cityInput = input<string | undefined>();
 
@@ -22,12 +23,18 @@ export class WeatherDisplay {
   city = signal('');
 
   constructor() {
-    effect(() => {
-      this.city.set(this.cityInput() ?? '');
-
-      this.error.set(null);
-    })
+    const lastCity = localStorage.getItem(this.lastCityKey);
+    if (lastCity) {
+      this.city.set(lastCity);
+    }
   }
+
+  cityEffect = effect(() => {
+    const inputCity = this.cityInput();
+    if (inputCity) {
+      this.city.set(inputCity);
+    }
+  });
 
   weatherData = toSignal(
     toObservable(this.city).pipe(
@@ -46,6 +53,7 @@ export class WeatherDisplay {
         return this.weatherService.getWeather(city).pipe(
           tap(data => {
             if (data) {
+              localStorage.setItem(this.lastCityKey, city);
               this.weatherService.saveToHistory(data); //Guardamos en el historial
             }
           }),
